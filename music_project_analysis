@@ -1,0 +1,89 @@
+2. Data Preprocessing
+The initial steps involve data preprocessing to ensure data integrity and readiness for analysis.
+
+
+
+import pandas as pd
+
+# Load the dataset
+df = pd.read_csv('music_streaming_data.csv')
+
+# Handle missing values, duplicates, and type conversions
+df.dropna(inplace=True)
+df.drop_duplicates(inplace=True)
+df['date'] = pd.to_datetime(df['date'])
+3. Data Analysis
+3.1 General Overview
+An initial look into the dataset provides us with a basic understanding of user activity.
+
+
+
+# Check the number of unique users in both cities
+unique_users = df.groupby('city')['userid'].nunique()
+
+print(f"Unique users in Springfield: {unique_users['Springfield']}")
+print(f"Unique users in Shelbyville: {unique_users['Shelbyville']}")
+3.2 Top Genres
+Determine the most popular genres in both cities.
+
+
+
+top_genres = df.groupby(['city', 'genre'])['trackname'].count().reset_index()
+
+# Top genre for Springfield
+springfield_genre = top_genres[top_genres['city'] == 'Springfield'].sort_values(by='trackname', ascending=False).iloc[0]
+springfield_top_genre = springfield_genre['genre']
+
+# Top genre for Shelbyville
+shelbyville_genre = top_genres[top_genres['city'] == 'Shelbyville'].sort_values(by='trackname', ascending=False).iloc[0]
+shelbyville_top_genre = shelbyville_genre['genre']
+
+print(f"Top genre in Springfield: {springfield_top_genre}")
+print(f"Top genre in Shelbyville: {shelbyville_top_genre}")
+3.5 User Behavior Analysis
+3.5.1 Average Number of Tracks Listened To
+
+
+daily_tracks = df.groupby(['city', 'userid', 'date'])['trackname'].count().reset_index()
+avg_daily_tracks = daily_tracks.groupby(['city', 'userid'])['trackname'].mean().reset_index()
+
+springfield_avg_tracks = avg_daily_tracks[avg_daily_tracks['city'] == 'Springfield']['trackname'].mean()
+shelbyville_avg_tracks = avg_daily_tracks[avg_daily_tracks['city'] == 'Shelbyville']['trackname'].mean()
+
+print(f"Average tracks per day in Springfield: {springfield_avg_tracks:.2f}")
+print(f"Average tracks per day in Shelbyville: {shelbyville_avg_tracks:.2f}")
+3.5.2 Peak Listening Time
+
+
+peak_time = df.groupby(['city', 'hour'])['userid'].count().reset_index()
+springfield_peak = peak_time[peak_time['city'] == 'Springfield'].sort_values(by='userid', ascending=False).iloc[0]
+springfield_peak_hour = springfield_peak['hour']
+
+shelbyville_peak = peak_time[peak_time['city'] == 'Shelbyville'].sort_values(by='userid', ascending=False).iloc[0]
+shelbyville_peak_hour = shelbyville_peak['hour']
+
+print(f"Peak listening time in Springfield: {springfield_peak_hour} hrs")
+print(f"Peak listening time in Shelbyville: {shelbyville_peak_hour} hrs")
+3.5.3 Days of the Week
+
+
+active_days = df.groupby(['city', 'day_of_week'])['userid'].count().reset_index()
+
+springfield_day = active_days[active_days['city'] == 'Springfield'].sort_values(by='userid', ascending=False).iloc[0]
+springfield_active_day = springfield_day['day_of_week']
+
+shelbyville_day = active_days[active_days['city'] == 'Shelbyville'].sort_values(by='userid', ascending=False).iloc[0]
+shelbyville_active_day = shelbyville_day['day_of_week']
+
+print(f"Most active day in Springfield: {springfield_active_day}")
+print(f"Most active day in Shelbyville: {shelbyville_active_day}")
+4. Recommendations and Next Steps
+Based on the analysis:
+
+Targeted Marketing Campaigns: Consider the peak times and days to design targeted marketing campaigns. Offer special playlists or discounts on premium subscriptions during these peak times.
+
+Personalized Recommendations: Use top genre knowledge to provide users with genre-based recommendations. This can enhance user engagement.
+
+User Surveys: Launch surveys in both cities to gain insights into user behaviors or preferences.
+
+Collaborations with Artists: Based on popular genres, consider exclusive collaborations with artists for new releases or events.
